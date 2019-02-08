@@ -15,10 +15,19 @@ namespace chartTest
 {
     public partial class Form1 : Form
     {
+
+        System.Windows.Forms.Timer timer01 = new System.Windows.Forms.Timer();
+        int tick_count01 = 0;
+
         public Form1()
         {
             InitializeComponent();
-            
+
+            timer01.Interval = 100;
+            timer01.Tick += new EventHandler(Timer01_tick);
+
+
+            /*
             StreamReader objReader = new StreamReader("c:\\Random.txt");
             string sLine = "";
             ArrayList arrText = new ArrayList();
@@ -35,9 +44,9 @@ namespace chartTest
                 chart1.Series[0].Points.AddXY(0, i);
             }
             objReader.Close();
-
+            */
         }
-        
+
         private void chart1_mousewheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             Console.WriteLine(DateTime.Now.ToLongTimeString());
@@ -68,5 +77,27 @@ namespace chartTest
                 chart1.ChartAreas[0].AxisX.ScaleView.Zoom(posXStart, posXFinish);
             }
         }
+
+        private void Start_Click(object sender, EventArgs e)
+        {
+            timer01.Start();
+        }
+
+        private void Stop_Click(object sender, EventArgs e)
+        {
+            timer01.Stop();
+        }
+
+        private void Timer01_tick(object sender, EventArgs e)
+        {
+            Random rnd = new Random();
+            chart1.Series[0].Points.AddXY(tick_count01++, rnd.Next(50));
+        }
+
+        private void chart1_Click(object sender, EventArgs e)
+        {
+            chart1.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+        }
+        
     }
 }
