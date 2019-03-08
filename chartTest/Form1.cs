@@ -25,6 +25,7 @@ namespace chartTest
         List<string> time_day = new List<string>();
         List<string> time_month = new List<string>();
         List<string> time_year = new List<string>();
+        List<DateTime> time_date = new List<DateTime>();
 
         public Form1()
         {
@@ -84,11 +85,14 @@ namespace chartTest
                 //chart1.Series[0].Points.AddY(x_data[tick_count01]);
                 //chart1.Series[1].Points.AddY(y_data[tick_count01]);
 
-                chart1.Series[0].Points.AddXY(time_day[tick_count01], x_data[tick_count01]);
-                chart1.Series[1].Points.AddXY(time_month[tick_count01], y_data[tick_count01]);
+                //chart1.Series[0].Points.AddXY(time_day[tick_count01], x_data[tick_count01]);
+                chart1.Series[1].Points.AddXY(time_month[tick_count01], x_data[tick_count01]);
+                chart1.Series[0].Points.AddXY(time_date[tick_count01], x_data[tick_count01]);
+                Console.WriteLine("date     " + time_date[tick_count01]);  
 
                 tick_count01++;
             }
+            
         }
 
         //stop button click event
@@ -156,10 +160,13 @@ namespace chartTest
                 string[] spstring00 = file_name.Split(Path.DirectorySeparatorChar);
                 string[] spstring01 = spstring00[spstring00.Count() - 1].Split('.');
                 string[] spstring02 = spstring01[0].Split('_');
-                
+
+                //DateTime myDate = DateTime.Parse("2018-02-15");
+
                 time_year.Add(spstring02[1].Substring(0,4));
                 time_month.Add(spstring02[1].Substring(4,2));
                 time_day.Add(spstring02[1].Substring(6));
+                time_date.Add(DateTime.Parse(spstring02[1].Substring(0,4) + "-" + spstring02[1].Substring(4, 2) + "-" + spstring02[1].Substring(6) + " " + spstring[0]));
             }
 
             return x_data;
