@@ -36,12 +36,12 @@
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.drawBT = new System.Windows.Forms.Button();
+            this.clearBT = new System.Windows.Forms.Button();
             this.LoadButton = new System.Windows.Forms.Button();
+            this.TestButton = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.TestButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -60,12 +60,10 @@
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.IsValueShownAsLabel = true;
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             series2.ChartArea = "ChartArea2";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series2.IsValueShownAsLabel = true;
             series2.Legend = "Legend1";
             series2.Name = "Series2";
             this.chart1.Series.Add(series1);
@@ -95,8 +93,8 @@
             // 
             // flowLayoutPanel1
             // 
-            this.flowLayoutPanel1.Controls.Add(this.button2);
-            this.flowLayoutPanel1.Controls.Add(this.button1);
+            this.flowLayoutPanel1.Controls.Add(this.drawBT);
+            this.flowLayoutPanel1.Controls.Add(this.clearBT);
             this.flowLayoutPanel1.Controls.Add(this.LoadButton);
             this.flowLayoutPanel1.Controls.Add(this.TestButton);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -105,27 +103,27 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(930, 44);
             this.flowLayoutPanel1.TabIndex = 1;
             // 
-            // button2
+            // drawBT
             // 
-            this.button2.AutoSize = true;
-            this.button2.Location = new System.Drawing.Point(3, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(106, 31);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Start";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.Start_Click);
+            this.drawBT.AutoSize = true;
+            this.drawBT.Location = new System.Drawing.Point(3, 3);
+            this.drawBT.Name = "drawBT";
+            this.drawBT.Size = new System.Drawing.Size(106, 31);
+            this.drawBT.TabIndex = 3;
+            this.drawBT.Text = "Draw";
+            this.drawBT.UseVisualStyleBackColor = true;
+            this.drawBT.Click += new System.EventHandler(this.Draw_Click);
             // 
-            // button1
+            // clearBT
             // 
-            this.button1.AutoSize = true;
-            this.button1.Location = new System.Drawing.Point(115, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(106, 31);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Stop";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Stop_Click);
+            this.clearBT.AutoSize = true;
+            this.clearBT.Location = new System.Drawing.Point(115, 3);
+            this.clearBT.Name = "clearBT";
+            this.clearBT.Size = new System.Drawing.Size(106, 31);
+            this.clearBT.TabIndex = 2;
+            this.clearBT.Text = "Clear";
+            this.clearBT.UseVisualStyleBackColor = true;
+            this.clearBT.Click += new System.EventHandler(this.Clear_Click);
             // 
             // LoadButton
             // 
@@ -138,15 +136,6 @@
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
-            // treeView1
-            // 
-            this.treeView1.CheckBoxes = true;
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(3, 3);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(194, 462);
-            this.treeView1.TabIndex = 2;
-            // 
             // TestButton
             // 
             this.TestButton.Location = new System.Drawing.Point(339, 3);
@@ -156,6 +145,16 @@
             this.TestButton.Text = "Test";
             this.TestButton.UseVisualStyleBackColor = true;
             this.TestButton.Click += new System.EventHandler(this.TestButton_Click);
+            // 
+            // treeView1
+            // 
+            this.treeView1.CheckBoxes = true;
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(3, 3);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(194, 462);
+            this.treeView1.TabIndex = 2;
+            this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             // 
             // Form1
             // 
@@ -177,8 +176,8 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button drawBT;
+        private System.Windows.Forms.Button clearBT;
         private System.Windows.Forms.Button LoadButton;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.Button TestButton;

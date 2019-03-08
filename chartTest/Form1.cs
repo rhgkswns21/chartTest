@@ -16,29 +16,24 @@ namespace chartTest
 {
     public partial class Form1 : Form
     {
-
-        System.Windows.Forms.Timer timer01 = new System.Windows.Forms.Timer();
         int tick_count01 = 0;
 
-        private static List<string> tempfilePath = null;
+        private static Dictionary<string, string> filePathDic = new Dictionary<string, string>();
         List<string> x_data = new List<string>();
         List<string> y_data = new List<string>();
-        List<string> time_data = new List<string>();
+        List<string> time_hour = new List<string>();
+        List<string> time_day = new List<string>();
+        List<string> time_month = new List<string>();
+        List<string> time_year = new List<string>();
 
         public Form1()
         {
-            InitializeComponent();
-
-            timer01.Interval = 100;
-            timer01.Tick += new EventHandler(Timer01_tick);
-            
+            InitializeComponent();            
         }
 
         private void chart1_mousewheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            Console.WriteLine(DateTime.Now.ToLongTimeString());
-            Console.WriteLine(e.Delta);
-            if(e.Delta > 0)
+            if (e.Delta > 0)
             {
                 //zoom
                 chart1.ChartAreas[0].AxisX.ScrollBar.Enabled = true;
@@ -65,139 +60,172 @@ namespace chartTest
             }
         }
 
-        private void Start_Click(object sender, EventArgs e)
+        //start button click event.
+        private void Draw_Click(object sender, EventArgs e)
         {
-            //timer01.Start();
+            time_hour.Clear();
+            x_data.Clear();
+            y_data.Clear();
             tick_count01 = 0;
-            Random rnd1 = new Random();
-            Random rnd2 = new Random(rnd1.Next());
-            foreach (string time in time_data)
+
+            List<string> passdata = new List<string>();
+
+            var list = new List<TreeNode>();
+            LookupChecks(treeView1.Nodes, list);
+
+            for (int i = 0; i < list.Count; i++)
             {
-                chart1.Series[0].Points.AddXY(time_data[tick_count01], x_data[tick_count01]);
-                chart1.Series[1].Points.AddXY(time_data[tick_count01], y_data[tick_count01]);
+                if (list[i].Name.IndexOf(".csv", StringComparison.OrdinalIgnoreCase) >= 0)
+                    passdata.AddRange(GetFileContent(filePathDic[list[i].Name]));
+            }
+
+            foreach (string time in time_hour)
+            {
+                //chart1.Series[0].Points.AddY(x_data[tick_count01]);
+                //chart1.Series[1].Points.AddY(y_data[tick_count01]);
+
+                chart1.Series[0].Points.AddXY(time_day[tick_count01], x_data[tick_count01]);
+                chart1.Series[1].Points.AddXY(time_month[tick_count01], y_data[tick_count01]);
+
                 tick_count01++;
             }
         }
 
-        private void Stop_Click(object sender, EventArgs e)
+        //stop button click event
+        private void Clear_Click(object sender, EventArgs e)
         {
-            //timer01.Stop();
-
-            List<string> passdata = new List<string>();
-            int count_check = 0;
-            foreach (TreeNode n in treeView1.Nodes)
-            {
-                if (n.Checked)
-                {
-                    Debug.WriteLine(n.Text);
-                    passdata.AddRange(GetFileContent(tempfilePath[count_check]));
-                    Debug.WriteLine("stopBT data " + passdata[0]);
-                }
-                count_check++;
-            }
+            chart1.Series[0].Points.Clear();
+            chart1.Series[1].Points.Clear();
         }
 
-        private void Timer01_tick(object sender, EventArgs e)
-        {
-            Random rnd1 = new Random();
-            Random rnd2 = new Random(rnd1.Next());
-            chart1.Series[0].Points.AddXY(tick_count01, rnd1.Next(50));
-            chart1.Series[1].Points.AddXY(tick_count01++, rnd2.Next(50));
-        }
-
-        private void chart1_Click(object sender, EventArgs e)
-        {
-            chart1.ChartAreas[0].AxisX.ScaleView.ZoomReset();
-
-            chart1.Series[0].IsValueShownAsLabel = !chart1.Series[0].IsValueShownAsLabel;
-            chart1.Series[1].IsValueShownAsLabel = !chart1.Series[1].IsValueShownAsLabel;
-        }
-
-        public List<string> GetFileContent(string file_name)
-        {
-            x_data.Clear();
-            
-            foreach (string line in File.ReadLines(file_name, Encoding.UTF8))
-            {
-                //x_data.Add(line.Substring(10, 7));
-                string[] spstring = line.Split(',');
-                time_data.Add(spstring[0]);
-                x_data.Add(spstring[1]);
-                y_data.Add(spstring[2]);
-                Debug.WriteLine("Line data  " + line);
-                Debug.WriteLine("time data  " + spstring[0]);
-                Debug.WriteLine("x data     " + spstring[1]);
-                Debug.WriteLine("y data     " + spstring[2]);
-            }
-            
-            return x_data;
-        }
-
+        //Load Button Click event.
         private void LoadButton_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = folderBrowserDialog1.ShowDialog();
+            //get select folder path
             string folder_path = folderBrowserDialog1.SelectedPath;
-            Debug.WriteLine("folder_path    " + folder_path);
-
-            List<string> file_list = new List<string>();
-                       
-            tempfilePath = new List<string>();
-
-            if( dialogResult == DialogResult.OK)
+            
+            if (dialogResult == DialogResult.OK)
             {
+                this.treeView1.Nodes.Clear();
+
                 DirectoryInfo Info = new DirectoryInfo(folder_path);
 
-                if (Info.Exists)
-                {
-                    DirectoryInfo[] CInfo = Info.GetDirectories("*", SearchOption.AllDirectories);
+                TreeNode treeNode00 = new TreeNode();
+                treeNode00.Name = Info.Name;
+                treeNode00.Text = Info.Name;
+                this.treeView1.Nodes.Add(treeNode00);
 
+                DirectoryInfo[] CInfo = Info.GetDirectories("*", SearchOption.AllDirectories);
+                
+                if(CInfo.Length > 0)
+                {
                     foreach (DirectoryInfo info in CInfo)
                     {
-                        Console.WriteLine(info.FullName);
-
                         TreeNode treeNode01 = new TreeNode();
                         treeNode01.Name = info.Name.ToString();
                         treeNode01.Text = info.Name.ToString();
-                        this.treeView1.Nodes.Add(treeNode01);
+                        treeNode00.Nodes.Add(treeNode01);
 
-                        foreach (string file in Directory.GetFiles(info.FullName, "*.csv", SearchOption.AllDirectories))
-                        {
-                            FileInfo fileInfo = new FileInfo(file);
-                            if (fileInfo.Extension == ".csv")
-                            {
-                                file_list.Add(fileInfo.Name.ToString());
-                                tempfilePath.Add(file);
-
-                                Debug.WriteLine(fileInfo.Extension);
-                                TreeNode treeNode02 = new TreeNode();
-                                treeNode02.Name = fileInfo.Name.ToString();
-                                treeNode02.Text = fileInfo.Name.ToString();
-                                treeNode01.Nodes.Add(treeNode02);
-                            }
-                            Debug.WriteLine("file_list  " + file_list);
-                            Debug.WriteLine("fileInfo   " + fileInfo.Name.ToString());
-                        }
+                        FileNodeAdd(treeNode01, info);
                     }
                 }
-
-                //foreach (string file in Directory.GetFiles(folder_path, "*.csv", SearchOption.AllDirectories))
-                //{
-                //    FileInfo fileInfo = new FileInfo(file);
-                //    if (fileInfo.Extension == ".csv")
-                //    {
-                //        file_list.Add(fileInfo.Name.ToString());
-                //        tempfilePath.Add(file);
-
-                    //        Debug.WriteLine(fileInfo.Extension);
-                    //        TreeNode treeNode01 = new TreeNode();
-                    //        treeNode01.Name = fileInfo.Name.ToString();
-                    //        treeNode01.Text = fileInfo.Name.ToString();
-                    //        this.treeView1.Nodes.Add(treeNode01);
-                    //    }
-                    //    Debug.WriteLine("file_list  " + file_list);
-                    //    Debug.WriteLine("fileInfo   " + fileInfo.Name.ToString());
-                    //}
+                else
+                {
+                    FileNodeAdd(treeNode00, Info);
                 }
+            }
+        }
+        
+        //chart1_click_event.
+        private void chart1_Click(object sender, EventArgs e)
+        {
+            chart1.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+        }
+
+        //csv file data get
+        public List<string> GetFileContent(string file_name)
+        {
+            foreach (string line in File.ReadLines(file_name, Encoding.UTF8))
+            {
+                string[] spstring = line.Split(',');
+                time_hour.Add(spstring[0]);
+                x_data.Add(spstring[1]);
+                y_data.Add(spstring[2]);
+
+                string[] spstring00 = file_name.Split(Path.DirectorySeparatorChar);
+                string[] spstring01 = spstring00[spstring00.Count() - 1].Split('.');
+                string[] spstring02 = spstring01[0].Split('_');
+                
+                time_year.Add(spstring02[1].Substring(0,4));
+                time_month.Add(spstring02[1].Substring(4,2));
+                time_day.Add(spstring02[1].Substring(6));
+            }
+
+            return x_data;
+        }
+
+        //treeview add node
+        private void FileNodeAdd(TreeNode tn, DirectoryInfo info)
+        {
+            foreach (string file in Directory.GetFiles(info.FullName, "*.csv", SearchOption.AllDirectories))
+            {
+                FileInfo fileInfo = new FileInfo(file);
+                if (fileInfo.Extension == ".csv")
+                {
+                    filePathDic.Add(fileInfo.Name.ToString(),file);
+                    TreeNode treeNode02 = new TreeNode();
+                    treeNode02.Name = fileInfo.Name.ToString();
+                    treeNode02.Text = fileInfo.Name.ToString();
+                    tn.Nodes.Add(treeNode02);
+                }
+            }
+        }
+
+        //treeView checkBox Live Check
+        private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            treeView1.AfterCheck -= treeView1_AfterCheck;
+            ChildNodeChecking(e.Node);
+            ParentNodeChecking(e.Node);
+            treeView1.AfterCheck += treeView1_AfterCheck;
+        }
+        public void ParentNodeChecking(TreeNode selectNode)
+        {
+            TreeNode t = selectNode.Parent;
+            if (t != null)
+            {
+                t.Checked = true;
+                foreach (TreeNode tn in t.Nodes)
+                {
+                    if (!tn.Checked)
+                    {
+                        t.Checked = false;
+                        break;
+                    }
+                }
+                ParentNodeChecking(t);
+            }
+        }
+        private void ChildNodeChecking(TreeNode selectNode)
+        {
+            foreach (TreeNode tn in selectNode.Nodes)
+            {
+                tn.Checked = selectNode.Checked;
+                ChildNodeChecking(tn);
+            }
+            return;
+        }
+
+        //treeview check Node Check
+        void LookupChecks(TreeNodeCollection nodes, List<TreeNode> list)
+        {
+            foreach (TreeNode node in nodes)
+            {
+                if (node.Checked)
+                    list.Add(node);
+                LookupChecks(node.Nodes, list);
+            }
         }
 
         private void TestButton_Click(object sender, EventArgs e)
